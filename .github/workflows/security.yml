@@ -1,0 +1,28 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t security-lab:${{ github.sha }} .
+
+      - name: Install Trivy
+        uses: aquasecurity/setup-trivy@v0.2.4
+
+      - name: Scan image
+        run: |
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            security-lab:${{ github.sha }}
