@@ -18,3 +18,12 @@ jobs:
 
       - name: Validate Docker build
         run: docker build -t my-web-image:test .
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'my-web-image:test'
+          format: 'table'
+          exit-code: '0'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
