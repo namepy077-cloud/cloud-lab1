@@ -1,3 +1,4 @@
+
 name: DevSecOps Pipeline
 
 on:
@@ -10,6 +11,7 @@ permissions:
 jobs:
   security:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -18,12 +20,7 @@ jobs:
         run: docker build -t security-lab:${{ github.sha }} .
 
       - name: Install Trivy
-        run: |
-          sudo apt-get install wget apt-transport-https gnupg lsb-release -y
-          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee /etc/sudoers.d/trivy.list
-          sudo apt-get update
-          sudo apt-get install trivy -y
+        uses: aquasecurity/setup-trivy@v0.2.4
 
       - name: Scan image
         run: |
